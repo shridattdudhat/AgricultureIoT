@@ -42,7 +42,6 @@ void setup() {
   //Blynk Begin
   Blynk.begin(auth, ssid, pass);
 
-  
   // Difining RGB pin as Output
   pinMode(redPin, OUTPUT);
   pinMode(greenPin, OUTPUT);
@@ -70,10 +69,8 @@ void loop() {
   WiFiStrength_ = WiFi.RSSI();   // Get dBm from ESP8266
   WiFiStrength = -WiFiStrength_; // Converting to Positive value
   
-  
   analogValue = analogRead(A0);         // Read Analog Signal From Moiture Sensor
   analogVolts = (analogValue*3) / 1024; //Convert Analog Signal to Voltage
-  
 
   analogValue = constrain(analogValue, 485, 1023);
   moistureLevel = map(analogValue, 485,1023,100,0);
@@ -141,7 +138,7 @@ void getToietStatus()
  if(presence == true && value == 0)
  {
    digitalWrite(toiletMotor, HIGH);
-   delay(3000);
+   delay(5000);
    digitalWrite(toiletMotor, LOW);
 
    presence = false;
