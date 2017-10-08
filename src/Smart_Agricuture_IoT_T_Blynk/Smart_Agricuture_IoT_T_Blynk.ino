@@ -2,10 +2,10 @@
 #include <ESP8266WiFi.h>
 #include <BlynkSimpleEsp8266.h>
 
-char auth[] = "af65b1232da84cd88fbfb4efb64ea19c";
+char auth[] = "Your auth tocken";
 
-char ssid[] = "Imagination";
-char pass[] = "Shr1datt";
+char ssid[] = "SSID";
+char pass[] = "Password";
 
 char* toiletStatus;
 
