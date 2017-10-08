@@ -2,12 +2,14 @@
 #include <ESP8266WiFi.h>
 #include <BlynkSimpleEsp8266.h>
 
-char auth[] = "Your auth tocken";
+char auth[] = "abcdefghijklmnopqrstywxz";
 
-char ssid[] = "SSID";
-char pass[] = "Password";
+char ssid[] = "Test";
+char pass[] = "TestPassword";
 
 char* toiletStatus;
+
+int debugFlag=0;
 
 const int redPin = 4;    // ~D2
 const int greenPin = 12; // ~D6
@@ -35,11 +37,9 @@ WidgetLCD lcd(V3);
 BlynkTimer timer;
 
 void setup() {
-  // put your setup code here, to run once:
   Serial.begin(115200);
+  // put your setup code here, to run once:
   Blynk.begin(auth, ssid, pass);
- // delay(10);
-  
   // Difining RGB pin as Output
   pinMode(redPin, OUTPUT);
   pinMode(greenPin, OUTPUT);
@@ -57,8 +57,6 @@ void setup() {
   analogWrite(bluePin, 300);
   
   // Connecting to WiFi Network
-  Serial.println();
-  Serial.println();
 }
 
 void loop() {
@@ -75,46 +73,13 @@ void loop() {
 
   analogValue = constrain(analogValue, 485, 1023);
   moistureLevel = map(analogValue, 485,1023,100,0);
-  
+
+  RGBindication();
 
   Blynk.virtualWrite(V1, moistureLevel);
   Blynk.virtualWrite(V2, WiFiStrength);
 
-  //Looping for RGB and LED Controll
-
-  if (moistureLevel <= 25) // 0-25 is red "dry"
-    {  
-      analogWrite(redPin, 1000);
-      analogWrite(greenPin, 0);
-      analogWrite(bluePin, 0);
-      waterPump = 255;
-      digitalWrite(FarmPin, HIGH);
-    }
-    
-    else if (moistureLevel > 25 && moistureLevel <= 75) // 26-75 is green
-    {
-      analogWrite(redPin, 0);
-      analogWrite(greenPin, 1000);
-      analogWrite(bluePin, 0);
-     
-    }
-    
-    else if (moistureLevel > 75 ) // 76-100 is blue
-    {
-      analogWrite(redPin, 0);
-      analogWrite(greenPin, 0);
-      analogWrite(bluePin, 1000);
-      waterPump = 0;
-      digitalWrite(FarmPin, LOW);
-    }
-
-//    delay(1000); // this is the duration the LED will stay ON
-
-//    analogWrite(redPin, 0);
-//    analogWrite(greenPin, 0);
-//    analogWrite(bluePin, 0);
-
-
+  //Looping for RGB and LED Controll    
   //Check Toilet Status
 
   motorCheck();
@@ -123,23 +88,7 @@ void loop() {
   Blynk.virtualWrite(V0, toiletUse);
   Blynk.virtualWrite(V4, waterPump);
 
-  
-  // Serial data
-  Serial.print("Toilet Usage :");
-  Serial.println(toiletUse);
-  Serial.print("Toilet ");
-  Serial.println(toiletStatus);
-  Serial.print("Analog raw: ");
-  Serial.println(analogValue);
-  Serial.print("Analog V: ");
-  Serial.println(analogVolts);
-  Serial.print("Moisture Level: ");
-  Serial.println(moistureLevel);
-  Serial.println(" ");
-  Serial.print("WiFi Strength: ");
-  Serial.print(WiFiStrength); Serial.println("dBm");
-
- // delay(1000); // slows amount of data sent via serial
+  debug();
 }
 
 void motorCheck()
@@ -182,3 +131,55 @@ void getToietStatus()
   }
 }
 
+void debug()
+{
+   if(debugFlag==1)
+   {
+    
+    Serial.print("Toilet Usage :");
+    Serial.println(toiletUse);
+    Serial.print("Toilet ");
+    Serial.println(toiletStatus);
+    Serial.print("Analog raw: ");
+    Serial.println(analogValue);
+    Serial.print("Analog V: ");
+    Serial.println(analogVolts);
+    Serial.print("Moisture Level: ");
+    Serial.println(moistureLevel);
+    Serial.println(" ");
+    Serial.print("WiFi Strength: ");
+    Serial.print(WiFiStrength); Serial.println("dBm");
+   }
+}
+
+void RGBindication()
+{
+
+  
+  if (moistureLevel <= 25) // 0-25 is red "dry"
+    {  
+      analogWrite(redPin, 1000);
+      analogWrite(greenPin, 0);
+      analogWrite(bluePin, 0);
+      waterPump = 255;
+      digitalWrite(FarmPin, HIGH);
+    }
+    
+    else if (moistureLevel > 25 && moistureLevel <= 75) // 26-75 is green
+    {
+      analogWrite(redPin, 0);
+      analogWrite(greenPin, 1000);
+      analogWrite(bluePin, 0);
+     
+    }
+    
+    else if (moistureLevel > 75 ) // 76-100 is blue
+    {
+      analogWrite(redPin, 0);
+      analogWrite(greenPin, 0);
+      analogWrite(bluePin, 1000);
+      waterPump = 0;
+      digitalWrite(FarmPin, LOW);
+    }
+  
+}
